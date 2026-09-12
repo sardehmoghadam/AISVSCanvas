@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C1.1.4
+canonicalId: v1.0-C1.1.4
+slug: c1-1-4-monitor-training-data-integrity
+title: "Monitor training data integrity"
+summary: "Integrity monitoring is applied to guard against unauthorized modifications or corruption of training data."
+chapter:
+  id: C1
+  title: "Training Data Integrity & Traceability"
+section:
+  id: C1.1
+  title: "Training Data Origin & Data Security"
+levels: ["2"]
+tags:
+  - "monitor"
+  - "training"
+  - "data"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST AI Risk Management Framework"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+  - label: "MITRE ATLAS: Poison Training Data (AML.T0020)"
+    url: "https://atlas.mitre.org/techniques/AML.T0020/"
+relatedControls:
+  - id: C1.1.5
+    title: "Watermark datasets for provenance"
+    href: /controls/c1-1-5-watermark-datasets-for-provenance/
+  - id: C1.1.3
+    title: "Protect training data integrity in storage and transfer"
+    href: /controls/c1-1-3-protect-training-data-integrity-in-storage-and-transfer/
+---
+
+## What This Control Means
+
+Integrity monitoring is applied to guard against unauthorized modifications or corruption of training data. This is a Level 2 requirement of OWASP AISVS 1.0 (Training Data Integrity & Traceability).
+
+## Why This Matters
+
+Compromised or untraceable training data silently changes model behavior at scale. Once poisoned data is ingested, the defect is embedded in the model and is hard to attribute, detect, or reverse after deployment.
+
+## Main Security Requirement
+
+> Verify that integrity monitoring is applied to guard against unauthorized modifications or corruption of training data.
+
+## Common Failure Patterns
+
+- **No data inventory** — pulling datasets from unrecorded sources makes provenance and licensing impossible to verify.
+- **Plaintext transfer and storage** — training data moves without integrity checks, so silent tampering goes unnoticed.
+- **Annotations open to everyone** — labeling platforms grant broad write access without role separation or audit trails.
+- **No poisoning detection** — pipelines accept backdoored or corrupted samples that shift model behavior.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Record the origin, license, and processing history of every training-data source.
+- Protect training data and labels with integrity controls at rest and in transit.
+- Run poisoning, label-quality, and bias checks before training consumes any data.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Is every dataset source inventoried with origin, license, and processing history?
+- Is integrity monitoring in place to detect unauthorized modification?
+- Do labeling platforms enforce role-based access and auditability?
+- Do pipelines run poisoning detection and label-quality checks before training?
+

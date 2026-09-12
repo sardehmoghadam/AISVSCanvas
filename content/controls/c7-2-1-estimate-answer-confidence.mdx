@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C7.2.1
+canonicalId: v1.0-C7.2.1
+slug: c7-2-1-estimate-answer-confidence
+title: "Estimate answer confidence"
+summary: "The system assesses the reliability of generated answers using a confidence estimation method."
+chapter:
+  id: C7
+  title: "Model Behavior, Output Control & Safety Assurance"
+section:
+  id: C7.2
+  title: "Hallucination Detection & Mitigation"
+levels: ["2"]
+tags:
+  - "estimate"
+  - "answer"
+  - "confidence"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "OWASP Top 10 for LLM Applications 2025: Improper Output Handling"
+    url: "https://genai.owasp.org/llm-top-10/"
+  - label: "NIST AI 600-1: Generative AI Profile"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+relatedControls:
+  - id: C7.2.2
+    title: "Block low-confidence answers"
+    href: /controls/c7-2-2-block-low-confidence-answers/
+  - id: C7.1.2
+    title: "Bound output length"
+    href: /controls/c7-1-2-bound-output-length/
+---
+
+## What This Control Means
+
+The system assesses the reliability of generated answers using a confidence estimation method. This is a Level 2 requirement of OWASP AISVS 1.0 (Model Behavior, Output Control & Safety Assurance).
+
+## Why This Matters
+
+Unvalidated model output can carry injection payloads, fabricated claims, or unsafe content straight into users or downstream systems. Output is a new untrusted boundary that must be checked before it is consumed.
+
+## Main Security Requirement
+
+> Verify that the system assesses the reliability of generated answers using a confidence estimation method.
+
+## Common Failure Patterns
+
+- **No schema validation** — raw model output flows downstream without structure or rejection.
+- **No confidence or hallucination gate** — low-confidence or fabricated answers reach users.
+- **Fabricated provenance** — the model invents citations instead of deriving them from retrieval metadata.
+- **Unchecked output content** — outputs that encode instructions or dangerous content are not screened.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Validate every output against a schema and reject mismatches.
+- Gate low-confidence and high-risk answers with fallbacks and verification steps.
+- Derive attribution from retrieval metadata, never from the model's imagination.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are model outputs validated against a schema and bounded by length?
+- Are hallucinated or low-confidence answers blocked or flagged?
+- Are RAG attributions traceable to retrieved chunks?
+- Is generated media watermarked as AI-generated?
+

@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C1.3.2
+canonicalId: v1.0-C1.3.2
+slug: c1-3-2-validate-automatic-labels
+title: "Validate automatic labels"
+summary: "Automatically generated labels are subject to confidence thresholds and consistency checks to detect misleading or low-confidence labels."
+chapter:
+  id: C1
+  title: "Training Data Integrity & Traceability"
+section:
+  id: C1.3
+  title: "Training Data Quality and Security Assurance"
+levels: ["2"]
+tags:
+  - "validate"
+  - "automatic"
+  - "labels"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST AI Risk Management Framework"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+  - label: "MITRE ATLAS: Poison Training Data (AML.T0020)"
+    url: "https://atlas.mitre.org/techniques/AML.T0020/"
+relatedControls:
+  - id: C1.3.3
+    title: "Evaluate models for bias"
+    href: /controls/c1-3-3-evaluate-models-for-bias/
+  - id: C1.3.1
+    title: "Detect training data poisoning"
+    href: /controls/c1-3-1-detect-training-data-poisoning/
+---
+
+## What This Control Means
+
+Automatically generated labels are subject to confidence thresholds and consistency checks to detect misleading or low-confidence labels. This is a Level 2 requirement of OWASP AISVS 1.0 (Training Data Integrity & Traceability).
+
+## Why This Matters
+
+Compromised or untraceable training data silently changes model behavior at scale. Once poisoned data is ingested, the defect is embedded in the model and is hard to attribute, detect, or reverse after deployment.
+
+## Main Security Requirement
+
+> Verify that automatically generated labels are subject to confidence thresholds and consistency checks to detect misleading or low-confidence labels.
+
+## Common Failure Patterns
+
+- **No data inventory** — pulling datasets from unrecorded sources makes provenance and licensing impossible to verify.
+- **Plaintext transfer and storage** — training data moves without integrity checks, so silent tampering goes unnoticed.
+- **Annotations open to everyone** — labeling platforms grant broad write access without role separation or audit trails.
+- **No poisoning detection** — pipelines accept backdoored or corrupted samples that shift model behavior.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Record the origin, license, and processing history of every training-data source.
+- Protect training data and labels with integrity controls at rest and in transit.
+- Run poisoning, label-quality, and bias checks before training consumes any data.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Is every dataset source inventoried with origin, license, and processing history?
+- Is integrity monitoring in place to detect unauthorized modification?
+- Do labeling platforms enforce role-based access and auditability?
+- Do pipelines run poisoning detection and label-quality checks before training?
+

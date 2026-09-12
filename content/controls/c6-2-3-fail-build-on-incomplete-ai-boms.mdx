@@ -1,0 +1,76 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C6.2.3
+canonicalId: v1.0-C6.2.3
+slug: c6-2-3-fail-build-on-incomplete-ai-boms
+title: "Fail build on incomplete AI BOMs"
+summary: "AI BOM completeness checks fail the build if any component metadata is missing."
+chapter:
+  id: C6
+  title: "Supply Chain Security for Models"
+section:
+  id: C6.2
+  title: "AI BOM & Supply Chain Monitoring"
+levels: ["2"]
+tags:
+  - "fail"
+  - "build"
+  - "incomplete"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "OWASP Top 10 for LLM Applications 2025: Supply Chain"
+    url: "https://genai.owasp.org/llm-top-10/"
+  - label: "CycloneDX: Machine Learning Bill of Materials"
+    url: "https://cyclonedx.org/capabilities/mlbom/"
+  - label: "CISA SBOM"
+    url: "https://www.cisa.gov/sbom"
+relatedControls:
+  - id: C6.2.2
+    title: "Sign AI BOMs"
+    href: /controls/c6-2-2-sign-ai-boms/
+---
+
+## What This Control Means
+
+AI BOM completeness checks fail the build if any component metadata is missing. This is a Level 2 requirement of OWASP AISVS 1.0 (Supply Chain Security for Models).
+
+## Why This Matters
+
+Third-party models, frameworks, and datasets can carry backdoors, bias, or embedded code. Importing them without provenance and behavioral checks turns a supply-chain compromise into a production vulnerability.
+
+## Main Security Requirement
+
+> Verify that AI BOM completeness checks fail the build if any component metadata is missing.
+
+## Common Failure Patterns
+
+- **Unvetted sources** — weights and adapters are pulled from unapproved or unknown origins.
+- **No malicious-code scan** — model files are imported without scanning for embedded code or pickle-style payloads.
+- **No AI BOM** — artifacts ship without a machine-readable inventory of datasets, licenses, and origins.
+- **No acceptance testing** — models are promoted without behavioral acceptance tests.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Import models only from approved, integrity-verifiable sources.
+- Scan artifacts for malicious code and run behavioral acceptance tests before promotion.
+- Publish and sign a version-controlled AI BOM for every artifact.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are models downloaded only from approved, integrity-verified sources?
+- Is every artifact scanned for malicious code and behavior-tested?
+- Is a signed AI BOM published and validated before deployment?
+- Does an AI BOM completeness failure block the build?
+

@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C8.1.3
+canonicalId: v1.0-C8.1.3
+slug: c8-1-3-enforce-retrieval-scope-constraints
+title: "Enforce retrieval scope constraints"
+summary: "Retrieval operations enforce scope constraints."
+chapter:
+  id: C8
+  title: "Memory, Embeddings & Vector Database Security"
+section:
+  id: C8.1
+  title: "Access Controls on Memory & RAG Indices"
+levels: ["2"]
+tags:
+  - "enforce"
+  - "retrieval"
+  - "scope"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "OWASP Top 10 for LLM Applications 2025: Vector and Embedding Weaknesses"
+    url: "https://genai.owasp.org/llm-top-10/"
+  - label: "MITRE ATLAS: RAG Poisoning"
+    url: "https://atlas.mitre.org/"
+relatedControls:
+  - id: C8.2.1
+    title: "Mask sensitive fields before embedding"
+    href: /controls/c8-2-1-mask-sensitive-fields-before-embedding/
+  - id: C8.1.2
+    title: "Make document metadata tags immutable"
+    href: /controls/c8-1-2-make-document-metadata-tags-immutable/
+---
+
+## What This Control Means
+
+Retrieval operations enforce scope constraints. This is a Level 2 requirement of OWASP AISVS 1.0 (Memory, Embeddings & Vector Database Security).
+
+## Why This Matters
+
+Vector stores and embeddings are persistent memory that attackers can poison, exfiltrate, or abuse to manipulate retrieval. Untrusted content written to memory becomes trusted context in future answers.
+
+## Main Security Requirement
+
+> Verify that retrieval operations enforce scope constraints.
+
+## Common Failure Patterns
+
+- **Cross-tenant collisions** — vector namespaces are not unique per tenant.
+- **Sensitive fields embedded** — raw PII or secrets are embedded without masking or redaction.
+- **Untrusted writes to memory** — agent/tool output is auto-persisted without source validation.
+- **No expiry or revocation** — stale or quarantined vectors remain retrievable indefinitely.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Enforce per-tenant uniqueness and scope constraints on retrieval.
+- Detect and mask sensitive fields before embedding.
+- Validate and quarantine untrusted memory writes; enforce expiry and revocation.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are vector identifiers unique per tenant and collision-proof?
+- Are sensitive fields masked, tokenized, or dropped before embedding?
+- Are agent/tool outputs validated before writing to memory?
+- Are expired and quarantined vectors excluded from retrieval?
+

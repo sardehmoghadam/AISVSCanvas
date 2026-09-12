@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C9.3.7
+canonicalId: v1.0-C9.3.7
+slug: c9-3-7-verify-external-resources-against-allow-lists
+title: "Verify external resources against allow-lists"
+summary: "External resources named in model output are verified against an approved allow-list or registry before the agent installs or invokes them."
+chapter:
+  id: C9
+  title: "Orchestration & Agentic Security"
+section:
+  id: C9.3
+  title: "Component Isolation and Tool Authorization"
+levels: ["2"]
+tags:
+  - "verify"
+  - "external"
+  - "resources"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "OWASP Top 10 for Agentic Applications 2026"
+    url: "https://genai.owasp.org/"
+  - label: "NIST AI 100-1: AI Risk Management Framework (AI RMF 1.0)"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+relatedControls:
+  - id: C9.3.8
+    title: "Automate tool containment on policy violations"
+    href: /controls/c9-3-8-automate-tool-containment-on-policy-violations/
+  - id: C9.3.6
+    title: "Separate untrusted tool output processing"
+    href: /controls/c9-3-6-separate-untrusted-tool-output-processing/
+---
+
+## What This Control Means
+
+External resources named in model output are verified against an approved allow-list or registry before the agent installs or invokes them. This is a Level 2 requirement of OWASP AISVS 1.0 (Orchestration & Agentic Security).
+
+## Why This Matters
+
+Agentic systems act on the world, so a hijacked or runaway agent can spend resources, mutate systems, or execute high-impact actions without human control. Every privileged step needs bounded scope, approval, and a kill-switch.
+
+## Main Security Requirement
+
+> Verify that external resources named in model output are verified against an approved allow-list or registry before the agent installs or invokes them.
+
+## Common Failure Patterns
+
+- **Unbounded loops** — no quotas, budgets, or timeouts on tool use, recursion, or spend.
+- **No approval gate** — high-impact actions execute without human approval.
+- **Fabricated approvals** — approval evidence is not cryptographically bound to the action.
+- **Model-enforced controls** — access control decisions depend on the model instead of a policy engine.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Bound execution with quotas, budgets, timeouts, and circuit breakers.
+- Require trusted, human approval for high-impact or irreversible actions.
+- Enforce authorization in application logic, never in the model itself.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are per-tool and per-execution budgets, quotas, and timeouts enforced?
+- Do high-impact or irreversible actions require verified human approval?
+- Are access control decisions enforced by a policy engine, not the model?
+- Does a manual, out-of-band kill-switch exist?
+

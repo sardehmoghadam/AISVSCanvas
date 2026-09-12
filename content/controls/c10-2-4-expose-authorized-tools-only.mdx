@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C10.2.4
+canonicalId: v1.0-C10.2.4
+slug: c10-2-4-expose-authorized-tools-only
+title: "Expose authorized tools only"
+summary: "MCP tools/list returns only tools permitted by resource owners' authorized scopes."
+chapter:
+  id: C10
+  title: "Model Context Protocol (MCP) Security"
+section:
+  id: C10.2
+  title: "Authentication & Authorization"
+levels: ["2"]
+tags:
+  - "expose"
+  - "authorized"
+  - "tools"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "Model Context Protocol (MCP) Specification"
+    url: "https://modelcontextprotocol.io/"
+  - label: "OAuth 2.1 (IETF Draft)"
+    url: "https://oauth.net/2.1/"
+relatedControls:
+  - id: C10.2.5
+    title: "Authorize each tool invocation"
+    href: /controls/c10-2-5-authorize-each-tool-invocation/
+  - id: C10.2.3
+    title: "Avoid persisting tokens"
+    href: /controls/c10-2-3-avoid-persisting-tokens/
+---
+
+## What This Control Means
+
+MCP tools/list returns only tools permitted by resource owners' authorized scopes. This is a Level 2 requirement of OWASP AISVS 1.0 (Model Context Protocol (MCP) Security).
+
+## Why This Matters
+
+MCP integrations hand the model tools and data, so a compromised or malicious MCP server becomes a remote-control channel. Authentication, transport, and input validation must hold even against untrusted servers and clients.
+
+## Main Security Requirement
+
+> Verify that MCP tools/list returns only tools permitted by resource owners' authorized scopes.
+
+## Common Failure Patterns
+
+- **Transport-only trust** — servers rely on TLS without validating access tokens.
+- **No schema or injection screening** — tool responses are injected into the model context unchecked.
+- **Token pass-through** — client tokens are forwarded to downstream APIs.
+- **DNS rebinding exposure** — Host/Origin headers are not independently validated.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Validate access tokens (issuer, audience, expiry, scope) on every request.
+- Validate and screen tools/list and tools/call responses before model injection.
+- Only allow allow-listed components and least-privilege sandboxes.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are access tokens validated on every MCP request?
+- Are tool responses schema-validated and screened for injection?
+- Are tokens never persisted or passed through to downstream APIs?
+- Are Origin and Host headers validated against DNS rebinding?
+

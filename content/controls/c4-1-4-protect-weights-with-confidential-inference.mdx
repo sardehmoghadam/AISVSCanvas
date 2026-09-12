@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C4.1.4
+canonicalId: v1.0-C4.1.4
+slug: c4-1-4-protect-weights-with-confidential-inference
+title: "Protect weights with confidential inference"
+summary: "Confidential inference services protect model weights during runtime through isolated execution environments."
+chapter:
+  id: C4
+  title: "Infrastructure, Configuration & Deployment Security"
+section:
+  id: C4.1
+  title: "AI Workload Sandboxing & Validation"
+levels: ["3"]
+tags:
+  - "protect"
+  - "weights"
+  - "confidential"
+keywords: []
+difficulty: advanced
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST SP 800-190: Application Container Security Guide"
+    url: "https://csrc.nist.gov/pubs/sp/800/190/final"
+  - label: "NIST AI Risk Management Framework"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+relatedControls:
+  - id: C4.2.1
+    title: "Pin, sign, and attest accelerator firmware"
+    href: /controls/c4-2-1-pin-sign-and-attest-accelerator-firmware/
+  - id: C4.1.3
+    title: "Attest workloads before model loading"
+    href: /controls/c4-1-3-attest-workloads-before-model-loading/
+---
+
+## What This Control Means
+
+Confidential inference services protect model weights during runtime through isolated execution environments. This is a Level 3 requirement of OWASP AISVS 1.0 (Infrastructure, Configuration & Deployment Security).
+
+## Why This Matters
+
+AI infrastructure is a high-value target for model theft and cross-tenant contamination. A weakly sandboxed model or unverified accelerator turns a single artifact load into arbitrary code execution or weight exfiltration.
+
+## Main Security Requirement
+
+> Verify that confidential inference services protect model weights during runtime through isolated execution environments.
+
+## Common Failure Patterns
+
+- **No sandbox** — models run in shared, unconstrained environments with broad filesystem and network access.
+- **Unsafe deserialization** — serialization formats that allow code execution are loaded without an allow-list.
+- **Unattested hardware** — accelerator firmware and workloads run without signed, attested boot or workload attestation.
+- **Unencrypted edge models** — weights ship in plaintext and can be extracted from device storage.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Isolate every model in a least-privilege sandbox.
+- Allow-list serialization formats that cannot execute code during deserialization.
+- Attest hardware and workloads, and protect weights with encryption or confidential computing.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Do models execute in isolated sandboxes?
+- Is deserialization restricted to safe, allow-listed formats?
+- Is workload/hardware attestation performed before loading?
+- Are edge-deployed weights signed and encrypted at rest?
+

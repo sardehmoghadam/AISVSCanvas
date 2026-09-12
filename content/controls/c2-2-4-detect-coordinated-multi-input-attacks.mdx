@@ -1,0 +1,74 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C2.2.4
+canonicalId: v1.0-C2.2.4
+slug: c2-2-4-detect-coordinated-multi-input-attacks
+title: "Detect coordinated multi-input attacks"
+summary: "Coordinated attacks spanning multiple input types (e.g., steganographic payloads in images combined with prompt injection in text) are detected and blocked."
+chapter:
+  id: C2
+  title: "Input Validation"
+section:
+  id: C2.2
+  title: "Content & Policy Screening"
+levels: ["3"]
+tags:
+  - "detect"
+  - "coordinated"
+  - "multi"
+keywords: []
+difficulty: advanced
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "OWASP Top 10 for LLM Applications 2025: Prompt Injection"
+    url: "https://genai.owasp.org/llm-top-10/"
+  - label: "MITRE ATLAS: LLM Prompt Injection (AML.T0051)"
+    url: "https://atlas.mitre.org/techniques/AML.T0051/"
+relatedControls:
+  - id: C2.2.3
+    title: "Screen non-text inputs for hidden content"
+    href: /controls/c2-2-3-screen-non-text-inputs-for-hidden-content/
+---
+
+## What This Control Means
+
+Coordinated attacks spanning multiple input types (e.g., steganographic payloads in images combined with prompt injection in text) are detected and blocked. This is a Level 3 requirement of OWASP AISVS 1.0 (Input Validation).
+
+## Why This Matters
+
+Prompt injection lets untrusted content steer the model into revealing secrets, calling tools, or executing instructions the developer never intended. Because injected text is indistinguishable from legitimate input, defense must happen before the model processes it.
+
+## Main Security Requirement
+
+> Verify that coordinated attacks spanning multiple input types (e.g., steganographic payloads in images combined with prompt injection in text) are detected and blocked.
+
+## Common Failure Patterns
+
+- **Trusting user text as instructions** — untrusted input is concatenated with system prompts without an instruction hierarchy.
+- **Truncating instead of rejecting** — over-long or malformed inputs are silently clipped, hiding malicious payloads.
+- **No screening ruleset** — inputs reach the model without prompt-injection or content policy classifiers.
+- **Encoding blind spots** — special tokens and representation smuggling pass validation because nothing canonicalizes them.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Treat every model-steering input as untrusted and screen it before tokenization.
+- Enforce an instruction hierarchy so system/developer messages override user text.
+- Reject (never truncate) inputs that exceed token, length, or character allow-lists.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are all steering inputs screened by a prompt-injection ruleset or classifier?
+- Does an instruction hierarchy keep user text from overriding system messages?
+- Are special tokens and encoding smuggling detected and mitigated?
+- Are over-limit inputs rejected rather than truncated?
+

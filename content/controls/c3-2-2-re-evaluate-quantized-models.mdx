@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C3.2.2
+canonicalId: v1.0-C3.2.2
+slug: c3-2-2-re-evaluate-quantized-models
+title: "Re-evaluate quantized models"
+summary: "Models subjected to post-training quantization are re-evaluated against the same safety and alignment test suite on the compressed artifact before deployment."
+chapter:
+  id: C3
+  title: "Model Lifecycle Management & Change Control"
+section:
+  id: C3.2
+  title: "Model Validation & Testing"
+levels: ["2"]
+tags:
+  - "evaluate"
+  - "quantized"
+  - "models"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST AI Risk Management Framework"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+  - label: "NIST SP 800-218A: Secure Software Development Practices for Generative AI"
+    url: "https://csrc.nist.gov/pubs/sp/800/218a/final"
+relatedControls:
+  - id: C3.2.3
+    title: "Re-evaluate on model changes"
+    href: /controls/c3-2-3-re-evaluate-on-model-changes/
+  - id: C3.2.1
+    title: "Test models before deployment"
+    href: /controls/c3-2-1-test-models-before-deployment/
+---
+
+## What This Control Means
+
+Models subjected to post-training quantization are re-evaluated against the same safety and alignment test suite on the compressed artifact before deployment. This is a Level 2 requirement of OWASP AISVS 1.0 (Model Lifecycle Management & Change Control).
+
+## Why This Matters
+
+An unapproved or tampered model is the most powerful backdoor in an AI system. Without registry, signing, and controlled rollout, a modified artifact can reach production and inherit the trust of the legitimate model.
+
+## Main Security Requirement
+
+> Verify that models subjected to post-training quantization are re-evaluated against the same safety and alignment test suite on the compressed artifact before deployment.
+
+## Common Failure Patterns
+
+- **Unsigned artifacts** — model weights and adapters are deployed without cryptographic signatures or admission checks.
+- **No pre-deployment testing** — models skip security and safety validation before promotion.
+- **Shared runtime across environments** — development and production components share runtime state, leaking or contaminating behavior.
+- **Untracked fine-tune stages** — intermediate fine-tuning checkpoints are not versioned or integrity-verified.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Maintain a registry of every deployed artifact and its origin.
+- Sign artifacts and verify signatures at deployment admission and on load.
+- Isolate development and production runtime state, and make rollouts reversible.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are all model artifacts inventoried, signed, and integrity-verified before load?
+- Do models pass security/safety validation before deployment?
+- Is runtime state isolated across environment boundaries?
+- Is rollout reversible with automated rollback triggers?
+

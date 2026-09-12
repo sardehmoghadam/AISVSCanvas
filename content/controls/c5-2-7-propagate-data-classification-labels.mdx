@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C5.2.7
+canonicalId: v1.0-C5.2.7
+slug: c5-2-7-propagate-data-classification-labels
+title: "Propagate data classification labels"
+summary: "Data classification labels propagate to downstream resources (embeddings, prompt caches, model outputs)."
+chapter:
+  id: C5
+  title: "Access Control & Identity for AI Components & Users"
+section:
+  id: C5.2
+  title: "AI Resource Authorization & Classification"
+levels: ["3"]
+tags:
+  - "propagate"
+  - "data"
+  - "classification"
+keywords: []
+difficulty: advanced
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST SP 800-207: Zero Trust Architecture"
+    url: "https://csrc.nist.gov/pubs/sp/800/207/final"
+  - label: "OAuth 2.1 (IETF Draft)"
+    url: "https://oauth.net/2.1/"
+relatedControls:
+  - id: C5.3.1
+    title: "Prevent cross-tenant model interference"
+    href: /controls/c5-3-1-prevent-cross-tenant-model-interference/
+  - id: C5.2.6
+    title: "Grant privileged access just in time"
+    href: /controls/c5-2-6-grant-privileged-access-just-in-time/
+---
+
+## What This Control Means
+
+Data classification labels propagate to downstream resources (embeddings, prompt caches, model outputs). This is a Level 3 requirement of OWASP AISVS 1.0 (Access Control & Identity for AI Components & Users).
+
+## Why This Matters
+
+AI pipelines add new authorization surfaces — vector stores, embeddings, and agents — where a single leaked retrieval or service-account permission exposes data across tenants and users.
+
+## Main Security Requirement
+
+> Verify that data classification labels propagate to downstream resources (embeddings, prompt caches, model outputs).
+
+## Common Failure Patterns
+
+- **Service-account authorization only** — RAG retrieval trusts the service account instead of the end-user's context.
+- **Broad allow-lists** — AI resources default to permissive access instead of default-deny.
+- **Standing privilege** — operators hold persistent access to weights and training pipelines.
+- **PDP in the agent** — authorization decisions run inside the same environment as the agent, so they can be influenced.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Enforce end-user authorization context at every retrieval and assembly stage.
+- Default-deny every AI resource with explicit allow-lists.
+- Isolate the policy decision point from the agent execution environment.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Does every AI resource enforce explicit allow-lists and default-deny?
+- Is the end-user's authorization context enforced through RAG/embedding lookups?
+- Is privileged access just-in-time and auto-expiring?
+- Are data classification labels propagated to embeddings, caches, and outputs?
+

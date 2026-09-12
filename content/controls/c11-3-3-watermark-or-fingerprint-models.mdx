@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C11.3.3
+canonicalId: v1.0-C11.3.3
+slug: c11-3-3-watermark-or-fingerprint-models
+title: "Watermark or fingerprint models"
+summary: "Model watermarking or fingerprinting techniques are applied so that unauthorized copies can be identified."
+chapter:
+  id: C11
+  title: "Adversarial Robustness"
+section:
+  id: C11.3
+  title: "Model-Extraction Defense"
+levels: ["3"]
+tags:
+  - "watermark"
+  - "fingerprint"
+  - "models"
+keywords: []
+difficulty: advanced
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST AI 100-2e2023: Adversarial Machine Learning"
+    url: "https://csrc.nist.gov/pubs/ai/100/2/e2023/final"
+  - label: "MITRE ATLAS: Evade ML Model (AML.T0015)"
+    url: "https://atlas.mitre.org/techniques/AML.T0015/"
+relatedControls:
+  - id: C11.3.4
+    title: "Respond to suspected extraction"
+    href: /controls/c11-3-4-respond-to-suspected-extraction/
+  - id: C11.3.2
+    title: "Limit raw output exposure"
+    href: /controls/c11-3-2-limit-raw-output-exposure/
+---
+
+## What This Control Means
+
+Model watermarking or fingerprinting techniques are applied so that unauthorized copies can be identified. This is a Level 3 requirement of OWASP AISVS 1.0 (Adversarial Robustness).
+
+## Why This Matters
+
+Adversarial inputs can make models misclassify, memorize, or leak their training data. Without aligned training, privacy mitigations, and extraction defenses, an API can be turned into a data-exfiltration or model-cloning engine.
+
+## Main Security Requirement
+
+> Verify that model watermarking or fingerprinting techniques are applied so that unauthorized copies can be identified.
+
+## Common Failure Patterns
+
+- **No alignment suite** — model updates ship without running a version-controlled safety test suite.
+- **Uncalibrated outputs** — overconfident predictions reveal sensitive attributes.
+- **Generic rate limits** — throttles ignore the extraction threat model.
+- **Exposed raw outputs** — raw model output exposes detail that aids cloning.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Run adversarial and alignment testing on every model update.
+- Limit membership inference with calibration, differential privacy, and rate limits.
+- Detect and deter extraction with query-pattern analysis and watermarking.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Is the model aligned, safety-trained, and adversarially evaluated?
+- Are sensitive attributes and overconfident predictions suppressed?
+- Are per-principal rate limits sized to the extraction threat model?
+- Does query-pattern analysis feed an extraction detector?
+

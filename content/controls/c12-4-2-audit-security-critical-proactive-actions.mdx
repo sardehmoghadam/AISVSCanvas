@@ -1,0 +1,79 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C12.4.2
+canonicalId: v1.0-C12.4.2
+slug: c12-4-2-audit-security-critical-proactive-actions
+title: "Audit security-critical proactive actions"
+summary: "Audit logs capture security-critical proactive actions, including approver identity, timestamp, action parameters, and decision outcomes."
+chapter:
+  id: C12
+  title: "Monitoring, Logging & Anomaly Detection"
+section:
+  id: C12.4
+  title: "Proactive Security Behavior Monitoring"
+levels: ["2"]
+tags:
+  - "audit"
+  - "security"
+  - "critical"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "OWASP Top 10 for LLM Applications 2025"
+    url: "https://genai.owasp.org/llm-top-10/"
+  - label: "NIST AI Risk Management Framework (AI RMF 1.0)"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+  - label: "MITRE ATLAS"
+    url: "https://atlas.mitre.org/"
+relatedControls:
+  - id: C12.4.3
+    title: "Log kill-switch activations"
+    href: /controls/c12-4-3-log-kill-switch-activations/
+  - id: C12.4.1
+    title: "Analyze proactive action triggers"
+    href: /controls/c12-4-1-analyze-proactive-action-triggers/
+---
+
+## What This Control Means
+
+Audit logs capture security-critical proactive actions, including approver identity, timestamp, action parameters, and decision outcomes. This is a Level 2 requirement of OWASP AISVS 1.0 (Monitoring, Logging & Anomaly Detection).
+
+## Why This Matters
+
+AI-specific abuse — jailbreaks, prompt injection, extraction, covert channels — is invisible without purpose-built telemetry. Logging and detection must capture what the model sees, does, and returns, with attribution granular enough to investigate.
+
+## Main Security Requirement
+
+> Verify that audit logs capture security-critical proactive actions, including approver identity, timestamp, action parameters, and decision outcomes.
+
+## Common Failure Patterns
+
+- **No AI telemetry** — interactions are logged without session context or model/token metadata.
+- **No detection rules** — jailbreak, injection, and extraction attempts raise no alerts or enrichments.
+- **No drift monitoring** — distribution and hallucination drift go unnoticed until users complain.
+- **No lifecycle audit** — dataset lineage and model changes are not immutable or auditable.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Log AI interactions with session context and structured AI telemetry.
+- Detect and enrich known AI attack patterns with AI-specific context.
+- Track drift, hallucination rates, and provenance as continuous metrics.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are AI interactions logged with model, token, and session metadata?
+- Are jailbreak, injection, and extraction attempts detected and alerted?
+- Is data/hallucination drift tracked as continuous metrics?
+- Are model and dataset changes recorded in immutable audit logs?
+

@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C3.4.2
+canonicalId: v1.0-C3.4.2
+slug: c3-4-2-isolate-training-from-production
+title: "Isolate training from production"
+summary: "Model training and fine-tuning environments are isolated from production environments."
+chapter:
+  id: C3
+  title: "Model Lifecycle Management & Change Control"
+section:
+  id: C3.4
+  title: "Secure Development Practices"
+levels: ["2"]
+tags:
+  - "isolate"
+  - "training"
+  - "production"
+keywords: []
+difficulty: intermediate
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST AI Risk Management Framework"
+    url: "https://www.nist.gov/itl/ai-risk-management-framework"
+  - label: "NIST SP 800-218A: Secure Software Development Practices for Generative AI"
+    url: "https://csrc.nist.gov/pubs/sp/800/218a/final"
+relatedControls:
+  - id: C3.5.1
+    title: "Verify RLHF models before training"
+    href: /controls/c3-5-1-verify-rlhf-models-before-training/
+  - id: C3.4.1
+    title: "Separate runtime components across environments"
+    href: /controls/c3-4-1-separate-runtime-components-across-environments/
+---
+
+## What This Control Means
+
+Model training and fine-tuning environments are isolated from production environments. This is a Level 2 requirement of OWASP AISVS 1.0 (Model Lifecycle Management & Change Control).
+
+## Why This Matters
+
+An unapproved or tampered model is the most powerful backdoor in an AI system. Without registry, signing, and controlled rollout, a modified artifact can reach production and inherit the trust of the legitimate model.
+
+## Main Security Requirement
+
+> Verify that model training and fine-tuning environments are isolated from production environments.
+
+## Common Failure Patterns
+
+- **Unsigned artifacts** — model weights and adapters are deployed without cryptographic signatures or admission checks.
+- **No pre-deployment testing** — models skip security and safety validation before promotion.
+- **Shared runtime across environments** — development and production components share runtime state, leaking or contaminating behavior.
+- **Untracked fine-tune stages** — intermediate fine-tuning checkpoints are not versioned or integrity-verified.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Maintain a registry of every deployed artifact and its origin.
+- Sign artifacts and verify signatures at deployment admission and on load.
+- Isolate development and production runtime state, and make rollouts reversible.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Are all model artifacts inventoried, signed, and integrity-verified before load?
+- Do models pass security/safety validation before deployment?
+- Is runtime state isolated across environment boundaries?
+- Is rollout reversible with automated rollback triggers?
+

@@ -1,0 +1,77 @@
+---
+schemaVersion: "1.0.0"
+standardVersion: "1.0"
+controlId: C11.1.2
+canonicalId: v1.0-C11.1.2
+slug: c11-1-2-run-version-controlled-alignment-tests
+title: "Run version-controlled alignment tests"
+summary: "A version-controlled alignment test suite is run on every model update or release."
+chapter:
+  id: C11
+  title: "Adversarial Robustness"
+section:
+  id: C11.1
+  title: "Model Alignment, Safety, and Robustness Testing and Training"
+levels: ["1"]
+tags:
+  - "version"
+  - "controlled"
+  - "alignment"
+keywords: []
+difficulty: foundational
+reviewStatus: draft
+references:
+  - label: "OWASP AISVS 1.0"
+    url: "https://github.com/OWASP/AISVS"
+  - label: "NIST AI 100-2e2023: Adversarial Machine Learning"
+    url: "https://csrc.nist.gov/pubs/ai/100/2/e2023/final"
+  - label: "MITRE ATLAS: Evade ML Model (AML.T0015)"
+    url: "https://atlas.mitre.org/techniques/AML.T0015/"
+relatedControls:
+  - id: C11.1.3
+    title: "Evaluate against adversarial techniques"
+    href: /controls/c11-1-3-evaluate-against-adversarial-techniques/
+  - id: C11.1.1
+    title: "Apply alignment and safety training"
+    href: /controls/c11-1-1-apply-alignment-and-safety-training/
+---
+
+## What This Control Means
+
+A version-controlled alignment test suite is run on every model update or release. This is a Level 1 requirement of OWASP AISVS 1.0 (Adversarial Robustness).
+
+## Why This Matters
+
+Adversarial inputs can make models misclassify, memorize, or leak their training data. Without aligned training, privacy mitigations, and extraction defenses, an API can be turned into a data-exfiltration or model-cloning engine.
+
+## Main Security Requirement
+
+> Verify that a version-controlled alignment test suite is run on every model update or release.
+
+## Common Failure Patterns
+
+- **No alignment suite** — model updates ship without running a version-controlled safety test suite.
+- **Uncalibrated outputs** — overconfident predictions reveal sensitive attributes.
+- **Generic rate limits** — throttles ignore the extraction threat model.
+- **Exposed raw outputs** — raw model output exposes detail that aids cloning.
+
+## Secure Implementation
+
+Enforce this requirement in deterministic application code or configuration, never in the model's own judgment. Keep reproducible evidence (logs, metrics, test results) for each enforcement point so an auditor can verify it.
+
+- Run adversarial and alignment testing on every model update.
+- Limit membership inference with calibration, differential privacy, and rate limits.
+- Detect and deter extraction with query-pattern analysis and watermarking.
+
+## Key Rules
+
+- Enforce the control in deterministic code or configuration, not through model behavior alone.
+- Record reproducible evidence — logs, metrics, and test results — for every enforcement point.
+
+## Checklist for Code Review
+
+- Is the model aligned, safety-trained, and adversarially evaluated?
+- Are sensitive attributes and overconfident predictions suppressed?
+- Are per-principal rate limits sized to the extraction threat model?
+- Does query-pattern analysis feed an extraction detector?
+
