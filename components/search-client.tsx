@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
@@ -30,9 +30,12 @@ export function SearchClient({ entries }: { entries: SearchEntry[] }) {
   const [query, setQuery] = useState(q);
 
   // Keep in sync when the URL changes (e.g. submitting from the header box).
-  useEffect(() => {
+  // Adjust state during render rather than in an effect (React-recommended pattern).
+  const [prevQ, setPrevQ] = useState(q);
+  if (prevQ !== q) {
+    setPrevQ(q);
     setQuery(q);
-  }, [q]);
+  }
 
   const trimmed = query.trim();
   const results = useMemo(() => filterEntries(entries, query), [entries, query]);
