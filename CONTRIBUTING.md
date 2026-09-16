@@ -67,9 +67,27 @@ Headings receive automatic IDs so they appear in the right-hand “On this page�
 - No secrets or unsafe defaults are introduced.
 - Build passes with `npm run build`.
 
+The same checklist is mirrored in `.github/PULL_REQUEST_TEMPLATE.md`, which also runs
+`npm test` and `npm run review:status`.
+
+## Review Workflow
+Content ships as `reviewStatus: draft` and is promoted only after a human review.
+
+1. Find work with `npm run review:status -- --list draft` (add `--chapter C2` to scope it).
+2. Claim a control with the `.github/ISSUE_TEMPLATE/control-review.md` issue template.
+3. Work through the checklist above for that single control.
+4. Open a PR that sets `reviewStatus: reviewed` and records the reviewer, date, and any
+   caveats in the "Review status" section of the PR template.
+5. Mark a control `needs-update` when new guidance invalidates its content. CI fails on
+   `needs-update`, so a stale control cannot ship unnoticed.
+
+Statuses are defined by `ReviewStatusSchema` in `lib/content/schema.ts`.
+
 ## Commands
 - `npm run dev` — local preview
 - `npm run build` — static export plus schema/type/MDX validation (fails on invalid content)
+- `npm test` — content-integrity tests (frontmatter schema, unique slugs, required sections, related links)
 - `npm run lint` — lint check
+- `npm run review:status` — draft vs reviewed coverage report (`--list`, `--chapter`, `--format`, `--fail-on`)
 - `node scripts/generate-aisvs-content.mjs` — regenerate categories, sections, and controls
 

@@ -29,6 +29,25 @@ Re-run it with `node scripts/generate-aisvs-content.mjs` to regenerate `content/
 
 See `CONTRIBUTING.md` or the in-app Contribute page (`/contribute/`) for the full guide.
 
+## Review Status
+Every control carries a `reviewStatus` in its frontmatter — `draft`, `reviewed`, or `needs-update`
+(see `lib/content/schema.ts`). New and AI-generated content stays `draft` until a human works
+through the review checklist.
+
+Report current coverage from the repo root:
+
+```bash
+npm run review:status                             # draft vs reviewed summary, per chapter
+npm run review:status -- --list draft             # the un-reviewed worklist
+npm run review:status -- --chapter C9             # scope to a single chapter
+npm run review:status -- --format markdown        # a table to paste into an issue
+npm run review:status -- --fail-on needs-update   # non-zero exit when a control needs re-review
+```
+
+Contributors use `.github/PULL_REQUEST_TEMPLATE.md` (the per-PR checklist) and
+`.github/ISSUE_TEMPLATE/control-review.md` (to claim a single control to review); the full
+workflow is documented in `CONTRIBUTING.md`.
+
 ## Deployment
 - Run `npm run build` to generate the static export.
 - Deploy the generated output to GitHub Pages or any static file host.

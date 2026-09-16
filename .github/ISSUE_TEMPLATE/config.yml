@@ -1,0 +1,10 @@
+# Keeps the "New issue" chooser focused while still allowing free-form issues.
+blank_issues_enabled: true
+
+contact_links:
+  - name: Authoring guide
+    url: https://github.com/sardehmoghadam/AISVSCanvas/blob/main/CONTRIBUTING.md
+    about: Frontmatter, the seven-section body template, and the authoring rules.
+  - name: Upstream AISVS standard
+    url: https://github.com/OWASP/AISVS
+    about: Questions or corrections about the OWASP AISVS requirements themselves.
