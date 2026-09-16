@@ -12,7 +12,7 @@ import {
  *
  * The MDX files under `content/controls/` are the source of truth. These tests
  * validate the same frontmatter schema the build uses, plus structural rules
- * that keep the 300+ authored pages consistent as new controls are added.
+ * that keep the authored control pages consistent as new controls are added.
  */
 
 const CONTROLS_DIR = path.join(process.cwd(), "content", "controls");
@@ -155,5 +155,72 @@ describe("Standard control content integrity", () => {
       }
     }
     expect(broken).toEqual([]);
+  });
+
+  it("declares an explicit reviewStatus on every control", () => {
+    const implicit = controls
+      .filter((control) => {
+        const raw = fs.readFileSync(path.join(CONTROLS_DIR, control.file), "utf-8");
+        return typeof matter(raw).data.reviewStatus !== "string";
+      })
+      .map((control) => control.file);
+    expect(implicit).toEqual([]);
+  });
+
+  it("has no controls flagged needs-update", () => {
+    // Preview of the guard CI enforces via `review-status.mjs --fail-on needs-update`,
+    // so a stale control is caught by `npm test` before it reaches a pull request.
+    const stale = controls
+      .filter((control) => control.frontmatter?.reviewStatus === "needs-update")
+      .map((control) => control.file);
+    expect(stale).toEqual([]);
+  });
+
+  it("relatedControls ids and titles match the control they point to", () => {
+    const bySlug = new Map(
+      controls
+        .filter((control) => control.frontmatter)
+        .map((control) => [control.frontmatter!.slug, control.frontmatter!]),
+    );
+
+    const mismatches: string[] = [];
+    for (const control of controls) {
+      for (const related of control.frontmatter?.relatedControls ?? []) {
+        const target = bySlug.get(slugFromHref(related.href));
+        if (!target) continue; // broken hrefs are reported by the test above
+        if (target.controlId !== related.id) {
+          mismatches.push(
+            `${control.file}: ${related.id} points at ${target.controlId} (${related.href})`,
+          );
+        } else if (target.title !== related.title) {
+          mismatches.push(
+            `${control.file}: ${related.id} title drift - "${related.title}" != "${target.title}"`,
+          );
+        }
+      }
+    }
+    expect(mismatches).toEqual([]);
+  });
+
+  it("every control cites at least one reference", () => {
+    const uncited = controls
+      .filter((control) => (control.frontmatter?.references.length ?? 0) === 0)
+      .map((control) => control.file);
+    expect(uncited).toEqual([]);
+  });
+
+  it("references use https urls with non-empty labels", () => {
+    const invalid: string[] = [];
+    for (const control of controls) {
+      for (const reference of control.frontmatter?.references ?? []) {
+        if (!reference.url.startsWith("https://")) {
+          invalid.push(`${control.file}: ${reference.url} is not https`);
+        }
+        if (!reference.label.trim()) {
+          invalid.push(`${control.file}: empty reference label`);
+        }
+      }
+    }
+    expect(invalid).toEqual([]);
   });
 });
