@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "review:status": "node scripts/review-status.mjs",
     "generate-icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
