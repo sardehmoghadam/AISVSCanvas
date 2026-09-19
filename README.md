@@ -18,7 +18,9 @@ AI-specific verification guidance.
 The AISVS content (12 chapters, 44 sections, 191 requirements) is generated programmatically from
 `scripts/generate-aisvs-content.mjs`, which holds the parsed standard plus per-chapter enrichment.
 Re-run it with `node scripts/generate-aisvs-content.mjs` to regenerate `content/categories.ts`,
-`content/sections.ts`, and every control MDX file.
+`content/sections.ts`, and every control MDX file. Regeneration preserves each control's
+`reviewStatus`, so marking a control `reviewed` is not undone by re-running the script; pass
+`--reset-review` to deliberately reset every control back to `draft`.
 
 ## Adding a New Control
 1. Create `content/controls/<slug>.mdx` with valid frontmatter (control ID, chapter, section, tags, references).

@@ -89,5 +89,7 @@ Statuses are defined by `ReviewStatusSchema` in `lib/content/schema.ts`.
 - `npm test` — content-integrity tests (frontmatter schema, unique slugs, required sections, related links)
 - `npm run lint` — lint check
 - `npm run review:status` — draft vs reviewed coverage report (`--list`, `--chapter`, `--format`, `--fail-on`)
-- `node scripts/generate-aisvs-content.mjs` — regenerate categories, sections, and controls
+- `node scripts/generate-aisvs-content.mjs` — regenerate categories, sections, and controls.
+  Existing review state is carried over, so this never discards `reviewed` or `needs-update`
+  markers; add `--reset-review` to deliberately stamp every control back to `draft`.
 

@@ -3,10 +3,16 @@
 //   - content/sections.ts
 //   - content/controls/*.mdx (one file per requirement)
 //
-// Run from the repo root:  node scripts/generate-aisvs-content.mjs
+// Run from the repo root:  node scripts/generate-aisvs-content.mjs [--reset-review]
+//
+// Review state survives a regeneration: each control's existing reviewStatus is
+// read back before the files are rewritten, so marking a control reviewed is not
+// undone by re-running this script. Pass --reset-review to stamp every control
+// draft again on purpose.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import matter from "gray-matter";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -656,7 +662,7 @@ function difficultyForLevel(level) {
   return level === "1" ? "foundational" : level === "2" ? "intermediate" : "advanced";
 }
 
-const controls = R.map(([chapterId, sectionNum, reqId, level, title, verify]) => {
+export const controls = R.map(([chapterId, sectionNum, reqId, level, title, verify]) => {
   const controlId = `C${reqId}`;
   const sectionId = `C${sectionNum}`;
   const canonicalId = `v${VERSION}-${controlId}`;
@@ -739,7 +745,7 @@ function bodyFor(c) {
   ].join("\n");
 }
 
-function frontmatterFor(c) {
+function frontmatterFor(c, reviewStatus = DEFAULT_REVIEW_STATUS) {
   return [
     "---",
     `schemaVersion: "1.0.0"`,
@@ -760,7 +766,7 @@ function frontmatterFor(c) {
     ...c.tags.map((t) => `  - ${q(t)}`),
     "keywords: []",
     `difficulty: ${c.difficulty}`,
-    `reviewStatus: draft`,
+    `reviewStatus: ${reviewStatus}`,
     "references:",
     yamlRefs(c.chapterId),
     "relatedControls:",
@@ -818,22 +824,91 @@ export function getSectionsByChapter(chapterId: string): Section[] {
 }
 `;
 
-const outDir = path.join(ROOT, "content");
-const controlsDir = path.join(outDir, "controls");
+// ─────────────────────────────────────────────────────────────────────────────
+// Review state preservation
+// ─────────────────────────────────────────────────────────────────────────────
+// Every control file is deleted and rewritten on each run, so review state has to
+// be snapshotted before that happens and carried over explicitly. Without this,
+// regenerating the corpus would silently reset each reviewed control back to
+// draft, discarding human review work with no error.
+const REVIEW_STATUSES = new Set(["draft", "reviewed", "needs-update"]);
+const DEFAULT_REVIEW_STATUS = "draft";
 
-fs.writeFileSync(path.join(outDir, "categories.ts"), categoriesTs);
-fs.writeFileSync(path.join(outDir, "sections.ts"), sectionsTs);
-
-if (!fs.existsSync(controlsDir)) fs.mkdirSync(controlsDir, { recursive: true });
-for (const file of fs.readdirSync(controlsDir)) {
-  if (file.endsWith(".mdx")) fs.rmSync(path.join(controlsDir, file));
+/** Coerce a frontmatter value to a known review status, or null if unrecognized. */
+export function normalizeReviewStatus(value) {
+  return typeof value === "string" && REVIEW_STATUSES.has(value) ? value : null;
 }
 
-for (const c of controls) {
-  const text = `${frontmatterFor(c)}\n\n${bodyFor(c)}\n`;
-  fs.writeFileSync(path.join(controlsDir, `${c.slug}.mdx`), text);
+/** Read the reviewStatus out of a single control file's text. */
+export function parseReviewStatus(text) {
+  const { data } = matter(text);
+  return normalizeReviewStatus(data ? data.reviewStatus : undefined);
 }
 
-console.log(`Wrote ${CHAPTERS.length} chapters, ${SECTIONS.length} sections, ${controls.length} controls.`);
+/**
+ * Snapshot the review state of the controls currently on disk. Records an entry
+ * under both the control id and the slug so that a retitled control - which gets
+ * a new slug - still keeps the state it was given.
+ */
+export function readReviewState(dir) {
+  const state = new Map();
+  if (!fs.existsSync(dir)) return state;
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".mdx")) continue;
+    const { data } = matter(fs.readFileSync(path.join(dir, file), "utf8"));
+    const status = normalizeReviewStatus(data ? data.reviewStatus : undefined);
+    if (!status) continue;
+    if (typeof data.controlId === "string") state.set(data.controlId, status);
+    state.set(file.replace(/\.mdx$/, ""), status);
+  }
+  return state;
+}
+
+/** The review status to emit for a control, given a snapshot from readReviewState. */
+export function reviewStatusFor(c, preserved) {
+  return preserved.get(c.controlId) ?? preserved.get(c.slug) ?? DEFAULT_REVIEW_STATUS;
+}
+
+/**
+ * Rewrite every control file in `dir`. Review state is restored from `preserved`;
+ * pass an empty map to deliberately stamp every control draft.
+ */
+export function writeControls(list, dir, preserved) {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  for (const file of fs.readdirSync(dir)) {
+    if (file.endsWith(".mdx")) fs.rmSync(path.join(dir, file));
+  }
+  for (const c of list) {
+    const reviewStatus = reviewStatusFor(c, preserved);
+    fs.writeFileSync(path.join(dir, `${c.slug}.mdx`), `${frontmatterFor(c, reviewStatus)}\n\n${bodyFor(c)}\n`);
+  }
+}
+
+function main(argv) {
+  const resetReview = argv.includes("--reset-review");
+  const outDir = path.join(ROOT, "content");
+  const controlsDir = path.join(outDir, "controls");
+
+  // Snapshot before writeControls deletes the existing files.
+  const preserved = resetReview ? new Map() : readReviewState(controlsDir);
+  const restored = controls.filter((c) => reviewStatusFor(c, preserved) !== DEFAULT_REVIEW_STATUS).length;
+
+  fs.writeFileSync(path.join(outDir, "categories.ts"), categoriesTs);
+  fs.writeFileSync(path.join(outDir, "sections.ts"), sectionsTs);
+  writeControls(controls, controlsDir, preserved);
+
+  console.log(`Wrote ${CHAPTERS.length} chapters, ${SECTIONS.length} sections, ${controls.length} controls.`);
+  console.log(
+    resetReview
+      ? `Review state: reset every control to ${DEFAULT_REVIEW_STATUS} (--reset-review).`
+      : `Review state: preserved ${restored} non-draft control(s).`,
+  );
+}
+
+// Only regenerate when run as a script, so tests can import the helpers above.
+const invokedDirectly = process.argv[1]
+  ? path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  : false;
+if (invokedDirectly) main(process.argv.slice(2));
 
 
