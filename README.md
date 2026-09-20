@@ -54,6 +54,11 @@ workflow is documented in `CONTRIBUTING.md`.
 - Run `npm run build` to generate the static export.
 - Deploy the generated output to GitHub Pages or any static file host.
 
+Pushes to `main` deploy automatically through `.github/workflows/deploy.yml`, which runs
+`npm run verify` (tests, lint, and the `needs-update` review gate) in the build job before
+`next build`. The deploy job depends on the build job, so a failing check blocks the deployment
+instead of shipping a broken or stale control to production.
+
 ## SEO
 - Per-page metadata (title, description, Open Graph/Twitter, canonical) is generated from `lib/site-config.ts`.
 - `app/robots.ts` and `app/sitemap.ts` emit `robots.txt` and `sitemap.xml` on the static export.

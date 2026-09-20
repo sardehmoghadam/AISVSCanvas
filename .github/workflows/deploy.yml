@@ -73,6 +73,11 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+      # Gate the deployment. The `deploy` job runs only when this job succeeds, so a
+      # failing test, a lint error, or a control marked `needs-update` stops the
+      # deploy before anything is built or uploaded.
+      - name: Verify content, tests and lint
+        run: ${{ steps.detect-package-manager.outputs.manager }} run verify
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
         env:

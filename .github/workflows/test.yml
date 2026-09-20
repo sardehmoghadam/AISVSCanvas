@@ -19,11 +19,5 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Run content validation tests
-        run: npm test
-      - name: Lint
-        run: npm run lint
-      - name: Report control review status
-        run: npm run review:status
-      - name: Fail on controls needing update
-        run: node scripts/review-status.mjs --fail-on needs-update
+      - name: Verify content, lint and review status
+        run: npm run verify

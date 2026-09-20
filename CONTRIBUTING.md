@@ -79,7 +79,8 @@ Content ships as `reviewStatus: draft` and is promoted only after a human review
 4. Open a PR that sets `reviewStatus: reviewed` and records the reviewer, date, and any
    caveats in the "Review status" section of the PR template.
 5. Mark a control `needs-update` when new guidance invalidates its content. CI fails on
-   `needs-update`, so a stale control cannot ship unnoticed.
+   `needs-update`, and the Pages deployment runs the same gate before it builds, so a stale
+   control cannot ship unnoticed or reach production.
 
 Statuses are defined by `ReviewStatusSchema` in `lib/content/schema.ts`.
 
@@ -88,6 +89,8 @@ Statuses are defined by `ReviewStatusSchema` in `lib/content/schema.ts`.
 - `npm run build` — static export plus schema/type/MDX validation (fails on invalid content)
 - `npm test` — content-integrity tests (frontmatter schema, unique slugs, required sections, related links)
 - `npm run lint` — lint check
+- `npm run verify` — the full local check: tests, lint, and the review-status gate
+  (`--fail-on needs-update`). This is what CI runs and what gates the deployment.
 - `npm run review:status` — draft vs reviewed coverage report (`--list`, `--chapter`, `--format`, `--fail-on`)
 - `node scripts/generate-aisvs-content.mjs` — regenerate categories, sections, and controls.
   Existing review state is carried over, so this never discards `reviewed` or `needs-update`
