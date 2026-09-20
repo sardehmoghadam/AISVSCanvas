@@ -72,8 +72,12 @@ describe("normalizeReviewStatus", () => {
 });
 
 describe("parseReviewStatus", () => {
-  it("reads reviewStatus out of real control frontmatter", () => {
-    expect(parseReviewStatus(fs.readFileSync(firstControlFile(), "utf8"))).toBe("draft");
+  it("reads a recognized status out of real control frontmatter", () => {
+    // Deliberately not pinned to a specific control or status: a contributor
+    // marking the first control `reviewed` must not fail this test.
+    expect(["draft", "reviewed", "needs-update"]).toContain(
+      parseReviewStatus(fs.readFileSync(firstControlFile(), "utf8")),
+    );
   });
 
   it("returns null when reviewStatus is absent or unknown", () => {
