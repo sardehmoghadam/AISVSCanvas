@@ -82,7 +82,11 @@ Content ships as `reviewStatus: draft` and is promoted only after a human review
    `needs-update`, and the Pages deployment runs the same gate before it builds, so a stale
    control cannot ship unnoticed or reach production.
 
-Statuses are defined by `ReviewStatusSchema` in `lib/content/schema.ts`.
+Statuses are defined by `ReviewStatusSchema` in `lib/content/schema.ts`. Cards render them through
+`ReviewStatusBadge`, which reads its label, colour, and tooltip from
+`lib/content/review-status.ts` (`draft` → Draft, `reviewed` → Reviewed, `needs-update` → Needs
+update); the views that list control cards (section pages and search results) add a legend
+explaining each state.
 
 ## Commands
 - `npm run dev` — local preview

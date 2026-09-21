@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
+import { ReviewStatusBadge } from "@/components/review-status-badge";
+import { ReviewStatusLegend } from "@/components/review-status-legend";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -90,6 +92,7 @@ export function SearchClient({ entries }: { entries: SearchEntry[] }) {
           <p className="mt-6 text-sm text-muted-foreground">
             {results.length} {results.length === 1 ? "result" : "results"} for &ldquo;{trimmed}&rdquo;
           </p>
+          <ReviewStatusLegend className="mt-4" />
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             {results.map((entry) => (
               <Link key={entry.controlId} href={entry.href} className="group block h-full">
@@ -98,7 +101,7 @@ export function SearchClient({ entries }: { entries: SearchEntry[] }) {
                     <div className="flex flex-wrap gap-2">
                       <Badge>{entry.controlId}</Badge>
                       <Badge variant="outline">{entry.difficulty}</Badge>
-                      <Badge variant="secondary">{entry.reviewStatus}</Badge>
+                      <ReviewStatusBadge status={entry.reviewStatus} />
                     </div>
                     <CardTitle className="text-lg">{entry.title}</CardTitle>
                     <CardDescription>{entry.summary}</CardDescription>

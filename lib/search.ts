@@ -1,6 +1,7 @@
 import { standard } from "../config/standard";
 import { getAllControls } from "./content/loader";
 import { stripMarkdownToText } from "./content/markdown-text";
+import { reviewStatusLabel } from "./content/review-status";
 
 /**
  * A lightweight, fully-serializable record for one searchable control.
@@ -43,6 +44,11 @@ function levelTerms(id: string): string[] {
   ];
 }
 
+/** Searchable terms for a review status (raw value and human label). */
+function reviewStatusTerms(status: string): string[] {
+  return [status, reviewStatusLabel(status)];
+}
+
 /**
  * Builds the static search index from the MDX control corpus.
  *
@@ -71,7 +77,7 @@ export function buildSearchIndex(): SearchEntry[] {
         fm.section?.title ?? "",
         ...fm.levels.flatMap(levelTerms),
         fm.difficulty,
-        fm.reviewStatus,
+        ...reviewStatusTerms(fm.reviewStatus),
         ...fm.tags,
         ...fm.keywords,
         ...references,

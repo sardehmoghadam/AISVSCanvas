@@ -140,6 +140,7 @@ export const ControlFrontmatterSchema = z
   });
 
 export type ControlFrontmatter = z.infer<typeof ControlFrontmatterSchema>;
+export type ReviewStatus = z.infer<typeof ReviewStatusSchema>;
 export type ControlReference = z.infer<typeof ReferenceSchema>;
 export type ControlRelated = z.infer<typeof RelatedControlSchema>;
 export type ControlCodeExampleMeta = z.infer<typeof CodeExampleMetaSchema>;

@@ -6,6 +6,8 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { SectionCard } from "@/components/cards";
 import { DocsLayout } from "@/components/docs-layout";
 import { JsonLd } from "@/components/json-ld";
+import { ReviewStatusBadge } from "@/components/review-status-badge";
+import { ReviewStatusLegend } from "@/components/review-status-legend";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -90,6 +92,7 @@ function ChapterControls({ category }: { category: (typeof categories)[number] }
       <h2 id="chapter-controls" className="text-2xl font-semibold tracking-tight">
         Controls ({controls.length})
       </h2>
+      {controls.length > 0 && <ReviewStatusLegend className="mt-5" />}
       {controls.length > 0 ? (
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {controls.map((entry) => {
@@ -101,7 +104,7 @@ function ChapterControls({ category }: { category: (typeof categories)[number] }
                     <div className="flex flex-wrap gap-2">
                       <Badge>{fm.controlId}</Badge>
                       <Badge variant="outline">{fm.difficulty}</Badge>
-                      <Badge variant="secondary">{fm.reviewStatus}</Badge>
+                      <ReviewStatusBadge status={fm.reviewStatus} />
                     </div>
                     <CardTitle className="text-lg">{fm.title}</CardTitle>
                     <CardDescription>{fm.summary}</CardDescription>

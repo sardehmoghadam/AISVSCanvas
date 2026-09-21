@@ -36,6 +36,12 @@ Every control carries a `reviewStatus` in its frontmatter — `draft`, `reviewed
 (see `lib/content/schema.ts`). New and AI-generated content stays `draft` until a human works
 through the review checklist.
 
+Every control card shows the status as a labelled badge — **Draft**, **Reviewed**, or
+**Needs update** — with a different colour per status, and a legend above the card list wherever
+control cards are listed (section pages and search results). The mapping lives in
+`lib/content/review-status.ts`, so the label always spells out the state instead of relying on
+colour alone.
+
 Report current coverage from the repo root:
 
 ```bash
