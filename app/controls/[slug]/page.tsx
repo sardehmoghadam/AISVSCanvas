@@ -5,6 +5,7 @@ import { DocsLayout } from "@/components/docs-layout";
 import { JsonLd } from "@/components/json-ld";
 import { ReferencesList } from "@/components/references-list";
 import { RelatedControls } from "@/components/related-controls";
+import { ReviewStatusBadge } from "@/components/review-status-badge";
 import { TableOfContents } from "@/components/table-of-contents";
 import { Badge } from "@/components/ui/badge";
 import { standard } from "@/config/standard";
@@ -99,6 +100,7 @@ async function renderMdxControl(entry: ControlEntry) {
               <Badge>{frontmatter.controlId}</Badge>
               <Badge variant="outline">{standard.name} {standard.version}</Badge>
               <Badge variant="secondary">{frontmatter.difficulty}</Badge>
+              <ReviewStatusBadge status={frontmatter.reviewStatus} />
             </div>
             <h1 className="mt-4 text-4xl font-bold tracking-tight text-balance">{frontmatter.title}</h1>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">{frontmatter.summary}</p>

@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { DocsLayout } from "@/components/docs-layout";
 import { JsonLd } from "@/components/json-ld";
+import { ReviewStatusBadge } from "@/components/review-status-badge";
+import { ReviewStatusLegend } from "@/components/review-status-legend";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { standard } from "@/config/standard";
@@ -110,6 +112,8 @@ export default async function SectionPage({ params }: { params: Promise<{ slug: 
             Controls in this section
           </h2>
 
+          {cards.length > 0 && <ReviewStatusLegend className="mt-5" />}
+
           {cards.length > 0 ? (
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {cards.map((card) => (
@@ -123,7 +127,7 @@ export default async function SectionPage({ params }: { params: Promise<{ slug: 
                       <div className="flex flex-wrap gap-2">
                         <Badge>{card.controlId}</Badge>
                         <Badge variant="outline">{card.difficulty}</Badge>
-                        <Badge variant="secondary">{card.reviewStatus}</Badge>
+                        <ReviewStatusBadge status={card.reviewStatus} />
                       </div>
                       <CardTitle className="text-lg">{card.title}</CardTitle>
                       <CardDescription>{card.summary}</CardDescription>
